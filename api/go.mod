@@ -1,3 +1,3 @@
-module github.com/matthieurobert/amp
+module github.com/matthieurobert/amp/api
 
 go 1.17
