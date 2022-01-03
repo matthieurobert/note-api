@@ -7,10 +7,13 @@ import (
 
 	"github.com/gorilla/mux"
 	"github.com/matthieurobert/amp/api/config"
+	"github.com/matthieurobert/amp/api/entity"
 )
 
 func main() {
 	config.Init()
+
+	entity.CreateSchema(config.POSTGRES.DB)
 
 	port := config.ENV.ApiPort
 	fmt.Println(port)
