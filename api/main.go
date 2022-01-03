@@ -8,6 +8,7 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/matthieurobert/amp/api/config"
 	"github.com/matthieurobert/amp/api/entity"
+	"github.com/matthieurobert/amp/api/handler"
 )
 
 func main() {
@@ -23,6 +24,9 @@ func main() {
 	r.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, "Hello World !")
 	})
+
+	r.HandleFunc("/notes", handler.GetNotesHandler).Methods("GET")
+	r.HandleFunc("/notes", handler.PostTaskHandler).Methods("POST")
 
 	fmt.Println("Server launched on port: " + strconv.Itoa(port))
 	http.ListenAndServe(":"+strconv.Itoa(port), r)
