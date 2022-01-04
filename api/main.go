@@ -6,14 +6,16 @@ import (
 	"strconv"
 
 	"github.com/gorilla/mux"
+	"github.com/matthieurobert/amp/api/auth"
 	"github.com/matthieurobert/amp/api/config"
 	"github.com/matthieurobert/amp/api/entity"
 	"github.com/matthieurobert/amp/api/handler"
+	"github.com/matthieurobert/amp/api/middleware"
 )
 
 func main() {
 	config.Init()
-
+	auth.InitAuth()
 	entity.CreateSchema(config.POSTGRES.DB)
 
 	port := config.ENV.ApiPort
@@ -25,8 +27,12 @@ func main() {
 		fmt.Fprintf(w, "Hello World !")
 	})
 
-	r.HandleFunc("/notes", handler.GetNotesHandler).Methods("GET")
-	r.HandleFunc("/notes", handler.PostTaskHandler).Methods("POST")
+	r.HandleFunc("/auth/token", middleware.AuthMiddleware(http.HandlerFunc(auth.CreateToken))).Methods("GET")
+
+	r.HandleFunc("/notes", middleware.AuthMiddleware(http.HandlerFunc(handler.GetNotesHandler))).Methods("GET")
+	r.HandleFunc("/notes", middleware.AuthMiddleware(http.HandlerFunc(handler.PostTaskHandler))).Methods("POST")
+
+	r.HandleFunc("/register", handler.Register).Methods("POST")
 
 	fmt.Println("Server launched on port: " + strconv.Itoa(port))
 	http.ListenAndServe(":"+strconv.Itoa(port), r)
